@@ -1,0 +1,42 @@
+syntax ="proto3";
+
+package api;
+
+
+service Bank{
+    rpc NewAccount (AccountReq) returns (Account);
+    rpc GetCredit (ID) returns (Credit);
+    rpc Transfer (TransactionReq) returns (Transaction);
+}
+
+message AccountReq{
+    string name = 1;
+    string lastName = 2;
+}
+message ID {
+    string id = 1;
+}
+message Credit {
+    int64 credit = 1;
+
+}
+message Account{
+    string id = 1;
+    string name = 2;
+    string lastName = 3;
+    int64 credit = 4;
+}
+
+
+message TransactionReq{
+    string senderID = 1;
+    string recvID = 2;
+    int64 amount = 3;
+}
+
+message Transaction{
+    string id = 1;
+    string senderID = 2;
+    string recvID = 3;
+    int64 amount = 4;
+}
