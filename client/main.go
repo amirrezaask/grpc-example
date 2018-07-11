@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"golang.org/x/net/context"
 
@@ -47,9 +48,15 @@ func main() {
 		log.Printf("Credit is :%v", credit.GetCredit())
 	case "transfer":
 		if len(os.Args) < 5 {
-			log.Fatalln("Usage: \n client sender_id recv_id amount")
+			log.Fatalln("Usage: \n client transfer sender_id recv_id amount")
 		}
-		trans, err := c.Transfer(ctx, &api.TransactionReq{})
+		amount, err := strconv.Atoi(os.Args[4])
+		if err != nil {
+			log.Fatalf("amount should be a number :%v", err)
+		}
+		trans, err := c.Transfer(ctx, &api.TransactionReq{
+			SenderID: os.Args[2], RecvID: os.Args[3], Amount: int64(amount),
+		})
 		if err != nil {
 			log.Fatalf("could not transfer money:%v", err)
 		}

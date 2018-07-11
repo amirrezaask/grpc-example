@@ -50,6 +50,7 @@ func (s *server) Transfer(ctx context.Context, t *api.TransactionReq) (*api.Tran
 	if db[t.GetSenderID()].GetCredit() < t.GetAmount() {
 		return nil, fmt.Errorf("credit is not enough")
 	}
+
 	return &api.Transaction{
 		Id:       uniuri.NewLen(8),
 		SenderID: t.SenderID,
