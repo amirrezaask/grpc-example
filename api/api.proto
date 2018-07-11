@@ -12,6 +12,7 @@ service Bank{
 message AccountReq{
     string name = 1;
     string lastName = 2;
+    int64 credit = 3;
 }
 message ID {
     string id = 1;

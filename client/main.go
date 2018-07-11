@@ -14,14 +14,24 @@ func main() {
 	if len(os.Args) < 2 {
 		log.Fatalln("Usage: \n client command")
 	}
+
+	conn, err := grpc.Dial(":8080", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("could not dial grpc host:%v", err)
+	}
+	defer conn.Close()
+	c := api.NewBankClient(conn)
 	ctx := context.Background()
-	c := &client{}
 	switch os.Args[1] {
 	case "new":
 		if len(os.Args) < 3 {
 			log.Fatalln("Usage: \n client add name")
 		}
-		account, err := c.NewAccount(ctx, &api.AccountReq{})
+		account, err := c.NewAccount(ctx, &api.AccountReq{
+			Name:     os.Args[2],
+			LastName: "",
+			Credit:   10000,
+		})
 		if err != nil {
 			log.Fatalf("could not create new account :%v", err)
 		}
@@ -30,11 +40,11 @@ func main() {
 		if len(os.Args) < 3 {
 			log.Fatalln("Usage: \n client credit account_id")
 		}
-		credit, err := c.GetCredit(ctx, &api.ID{})
+		credit, err := c.GetCredit(ctx, &api.ID{Id: os.Args[2]})
 		if err != nil {
 			log.Fatalf("could not get credit  :%v", err)
 		}
-		log.Printf("Credit is :%v", credit)
+		log.Printf("Credit is :%v", credit.GetCredit())
 	case "transfer":
 		if len(os.Args) < 5 {
 			log.Fatalln("Usage: \n client sender_id recv_id amount")
@@ -49,14 +59,4 @@ func main() {
 
 	}
 
-}
-
-type client struct{}
-
-func (c *client) NewAccount(ctx context.Context, in *api.AccountReq, opts ...grpc.CallOption) (*api.Account, error) {
-
-}
-func (c *client) GetCredit(ctx context.Context, in *api.ID, opts ...grpc.CallOption) (*api.Credit, error) {
-}
-func (c *client) Transfer(ctx context.Context, in *api.TransactionReq, opts ...grpc.CallOption) (*api.Transaction, error) {
 }
