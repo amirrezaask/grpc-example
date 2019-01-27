@@ -6,10 +6,11 @@ import (
 	"net"
 
 	"github.com/dchest/uniuri"
+	"github.com/pkg/errors"
 
 	"golang.org/x/net/context"
 
-	"github.com/amirrezaask/bank_grpc/api"
+	"github.com/amirrezaask/grpc-example/api"
 	"google.golang.org/grpc"
 )
 
@@ -40,7 +41,7 @@ func (s *server) GetCredit(ctx context.Context, id *api.ID) (*api.Credit, error)
 	log.Println(id.GetId())
 	log.Println(db[id.GetId()].GetName())
 	if db[id.GetId()] == nil {
-		return nil, fmt.Errorf("could not find this id :%v", id.GetId())
+		return nil, errors.New(fmt.Sprintf("could not find this id :%v", id.GetId()))
 
 	}
 	return &api.Credit{Credit: db[id.GetId()].GetCredit()}, nil
@@ -48,7 +49,7 @@ func (s *server) GetCredit(ctx context.Context, id *api.ID) (*api.Credit, error)
 }
 func (s *server) Transfer(ctx context.Context, t *api.TransactionReq) (*api.Transaction, error) {
 	if db[t.GetSenderID()].GetCredit() < t.GetAmount() {
-		return nil, fmt.Errorf("credit is not enough")
+		return nil, errors.New(fmt.Sprintf("credit is not enough"))
 	}
 
 	return &api.Transaction{
